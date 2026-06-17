@@ -1,0 +1,7 @@
+{
+  "ps5_ip": "192.168.12.208",
+  "receive_port": 33740,
+  "send_port": 33739,
+  "heartbeat_ms": 250,
+  "led_count": 100
+}
