@@ -1,6 +1,22 @@
 
 
-So right now in my development environment I have GT7 talking to PS5 which is talking to my dev PC and my dev PC is talking to VS Code in debug mode producing brake pedal travel telemetry.
+TODO
+set up logging to a file just before deploying to Pi.
+
+Pi OS Configuration
+===================
+Hostname: brakeled
+Localization: Washington | Phoenix
+User: pi; Password: see password manager;
+
+Powershell (windows default terminal)
+    SSH into Pi:
+    ssh pi@brakeled.local
+    password is in pword mgr
+
+Soldering
+the 330 ohm resistor inline on the data wire between the Pi's GPIO pin 18 and the LED strip's data line.
+So solder 
 
 Let's review the physical architecture of the production environment. Correct me if necessary:
 
@@ -21,11 +37,3 @@ PS5 connects to the Gateway via WiFi (already done)
 LED power supply plugs into an electrical outlet
 LED strip plugs into the Pi (review this connection with me)
 
-Shopping list
-=============
-Raspberry Pi 4 Model B 1GB RAM
-
-
-
-JST-SM 3-pin extension cable, ~3 feet
-330 ohm resistor pack

@@ -89,7 +89,7 @@ def parse_brake(decrypted: bytes):
     """Extract brake percentage (0.0-100.0) from decrypted packet, or None."""
     if len(decrypted) < 147:
         return None
-    return (decrypted[146] / 255.0) * 100.0
+    return min((decrypted[146] / 255.0) * 100.0, 100.0)
 
 
 def is_valid_packet(decrypted: bytes) -> bool:

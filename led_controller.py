@@ -4,6 +4,8 @@ Manages LED color zone logic and output — either to real WS2812B
 hardware via NeoPixel on the Pi, or a console simulation on Windows.
 """
 
+import os
+
 # ── Color zone logic ──────────────────────────────────────────────────────────
 
 def build_color_zones(colors: dict) -> list:
@@ -41,11 +43,26 @@ def compute_led_states(brake_pct: float, led_count: int, color_zones: list) -> l
 
 # ── Hardware vs simulation detection ─────────────────────────────────────────
 
+def _is_raspberry_pi() -> bool:
+    """Return True if we are running on a Raspberry Pi."""
+    try:
+        with open("/proc/device-tree/model", "r") as f:
+            model = f.read()
+            return "Raspberry Pi" in model
+    except Exception:
+        return False
+
+
 def _try_init_hardware(led_count: int, brightness: int):
     """
     Attempt to initialize the NeoPixel hardware.
-    Returns a pixels object on success, None on failure (e.g. running on Windows).
+    Only tries on a real Raspberry Pi with LED strip physically connected.
+    Returns a pixels object on success, None otherwise.
     """
+    if not _is_raspberry_pi():
+        print("✓ Not a Raspberry Pi — running in simulation mode.")
+        return None
+
     try:
         import board
         import neopixel
@@ -58,8 +75,8 @@ def _try_init_hardware(led_count: int, brightness: int):
         )
         print("✓ NeoPixel hardware detected — running in LED mode.")
         return pixels
-    except (ImportError, NotImplementedError, ValueError):
-        print("✓ No LED hardware detected — running in simulation mode.")
+    except Exception as e:
+        print(f"✓ LED hardware not available ({e}) — running in simulation mode.")
         return None
 
 # ── LED controller class ──────────────────────────────────────────────────────
