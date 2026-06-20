@@ -4,7 +4,9 @@ Manages LED color zone logic and output — either to real WS2812B
 hardware via NeoPixel on the Pi, or a console simulation on Windows.
 """
 
-import os
+import logging
+
+log = logging.getLogger(__name__)
 
 # ── Color zone logic ──────────────────────────────────────────────────────────
 
@@ -60,7 +62,7 @@ def _try_init_hardware(led_count: int, brightness: int):
     Returns a pixels object on success, None otherwise.
     """
     if not _is_raspberry_pi():
-        print("✓ Not a Raspberry Pi — running in simulation mode.")
+        log.info("Not a Raspberry Pi — running in simulation mode.")
         return None
 
     try:
@@ -73,10 +75,10 @@ def _try_init_hardware(led_count: int, brightness: int):
             auto_write=False,
             pixel_order=neopixel.GRB
         )
-        print("✓ NeoPixel hardware detected — running in LED mode.")
+        log.info("NeoPixel hardware detected — running in LED mode.")
         return pixels
     except Exception as e:
-        print(f"✓ LED hardware not available ({e}) — running in simulation mode.")
+        log.warning(f"LED hardware not available ({e}) — running in simulation mode.")
         return None
 
 # ── LED controller class ──────────────────────────────────────────────────────

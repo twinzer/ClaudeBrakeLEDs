@@ -5,10 +5,11 @@ and feeds brake data to the LED controller.
 """
 
 import socket
-import struct
 import json
 import pathlib
+import logging
 
+from logger import setup_logging
 from gt7_telemetry import start_heartbeat, decrypt_gt7_packet, is_valid_packet, parse_brake
 from led_controller import LEDController
 
@@ -29,16 +30,20 @@ COLORS       = cfg["colors"]
 # ── Main ──────────────────────────────────────────────────────────────────────
 
 def main():
+    log = setup_logging()
+    log.info("ClaudeBrakeLEDs starting up")
+    log.info(f"PS5 IP: {PS5_IP}, receive port: {RECEIVE_PORT}, send port: {SEND_PORT}")
+
     leds = LEDController(LED_COUNT, BRIGHTNESS, COLORS)
 
     start_heartbeat(PS5_IP, SEND_PORT, HEARTBEAT_MS)
+    log.info("Heartbeat started")
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.bind(("", RECEIVE_PORT))
     sock.settimeout(5.0)
 
-    print(f"Listening for GT7 telemetry on port {RECEIVE_PORT}")
-    print("Press Ctrl+C to stop.\n")
+    log.info(f"Listening for GT7 telemetry on port {RECEIVE_PORT}")
 
     try:
         while True:
@@ -59,10 +64,13 @@ def main():
                 pass  # keep waiting silently
 
     except KeyboardInterrupt:
-        print("\n\nStopped.")
+        log.info("Stopped by user.")
         leds.clear()
+    except Exception as e:
+        log.error(f"Fatal error: {e}", exc_info=True)
     finally:
         sock.close()
+        log.info("Socket closed. Exiting.")
 
 
 if __name__ == "__main__":

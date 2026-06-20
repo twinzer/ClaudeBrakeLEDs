@@ -8,6 +8,9 @@ import socket
 import struct
 import threading
 import time
+import logging
+
+log = logging.getLogger(__name__)
 
 # ── Salsa20 ───────────────────────────────────────────────────────────────────
 
@@ -108,6 +111,6 @@ def start_heartbeat(ps5_ip: str, send_port: int, interval_ms: int):
             try:
                 sock.sendto(payload, (ps5_ip, send_port))
             except Exception as e:
-                print(f"Heartbeat error: {e}")
+                log.error(f"Heartbeat error: {e}")
             time.sleep(interval_ms / 1000.0)
     threading.Thread(target=_heartbeat, daemon=True).start()
