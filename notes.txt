@@ -3,6 +3,8 @@
 TODO
 set up logging to a file just before deploying to Pi.
 
+sudo shutdown now
+
 Pi OS Configuration
 ===================
 Hostname: brakeled

@@ -1,0 +1,15 @@
+[Unit]
+Description=GT7 Brake LEDs
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/ClaudeBrakeLEDs/brake_leds.py
+WorkingDirectory=/home/pi/ClaudeBrakeLEDs
+StandardOutput=journal
+StandardError=journal
+Restart=always
+RestartSec=5
+User=root
+
+[Install]
+WantedBy=multi-user.target
