@@ -1,9 +1,26 @@
+Git Cheat Sheet
+https://git-scm.com/cheat-sheet
 
 
-TODO
-set up logging to a file just before deploying to Pi.
+Powershell (windows default terminal)
+    SSH into Pi:
+    ssh pi@brakeled.local
+    password is in pword mgr
 
-sudo shutdown now
+    Navigate to your project and run the code:
+    cd ~/ClaudeBrakeLEDs
+    sudo python3 brake_leds.py
+    
+    restart LED service on Pi:
+    sudo systemctl restart brakeleds.service
+
+    Check the log 
+    cat ~/ClaudeBrakeLEDs/brakeleds.log
+
+    Test if Pi is running:
+    ping brakeled.local
+    
+    sudo shutdown now
 
 Pi OS Configuration
 ===================
@@ -11,31 +28,6 @@ Hostname: brakeled
 Localization: Washington | Phoenix
 User: pi; Password: see password manager;
 
-Powershell (windows default terminal)
-    SSH into Pi:
-    ssh pi@brakeled.local
-    password is in pword mgr
 
-Soldering
-the 330 ohm resistor inline on the data wire between the Pi's GPIO pin 18 and the LED strip's data line.
-So solder 
 
-Let's review the physical architecture of the production environment. Correct me if necessary:
-
-Physical objects
-==============
-T-Mobile 5 G Gateway 
-Pi Linux mini PC 
-Pi power supply PS5
-LED strip
-Power supply for the LED strip
-
-Connections
-==========
-Pi power supply plugs into electrical outlet
-Pi power supply connects to the Pi computer
-Pi connects to the Gateway (WiFi recommended, Cat5e optional)
-PS5 connects to the Gateway via WiFi (already done)
-LED power supply plugs into an electrical outlet
-LED strip plugs into the Pi (review this connection with me)
-
+Green LED data wire connects to Pi GPIO pin 12

@@ -1,0 +1,25 @@
+TODO List
+Networking (after fiber installation):
+
+Set up new router and get new IP addresses
+Update config.json on Pi with new PS5 IP address
+Set DHCP reservation for Pi in new router so IP never changes
+Update ConnectBot connection with new Pi IP address
+Test ConnectBot one-tap shutdown
+
+Code improvements:
+
+6. Self-healing telemetry reconnection — burst heartbeats when no packet received for X seconds
+
+7. Logger name fix — showing logger instead of brake_leds in log entries
+New feature:
+
+8. Throttle LED strip — second strip on right side of TV
+Maintenance:
+
+9. Update SD card backup after fiber installation and IP changes are complete
+
+Throttle Strip Preparation
+When you're ready, here's what to think about before we start coding:
+
+Confirm which GPIO pin you'll use for the throttle data wire — we discussed GPIO 12 (physical pin 32)
