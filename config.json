@@ -10,5 +10,9 @@
         "zone2_yellow": [255, 255, 0],
         "zone3_orange": [255, 80, 0],
         "zone4_red":    [255, 0, 0]
-    }
+    },
+    "throttle_led_count": 100,
+    "_comment_throttle_color": "Throttle uses a single white zone across all 100 LEDs. Brightness is set at 50% of brake brightness (76) by halving the RGB values: 128,128,128 instead of 255,255,255. No separate brightness setting needed.",
+    "throttle_color": [32, 32, 32],
+    "throttle_gpio_pin": 13
 }

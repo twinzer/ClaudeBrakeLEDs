@@ -1,7 +1,7 @@
 """
 gt7_telemetry.py
 Handles all GT7 UDP telemetry: heartbeat, receiving packets,
-Salsa20 decryption, and extracting brake data.
+Salsa20 decryption, and extracting brake and throttle data.
 """
 
 import socket
@@ -93,6 +93,13 @@ def parse_brake(decrypted: bytes):
     if len(decrypted) < 147:
         return None
     return min((decrypted[146] / 255.0) * 100.0, 100.0)
+
+
+def parse_throttle(decrypted: bytes):
+    """Extract throttle percentage (0.0-100.0) from decrypted packet, or None."""
+    if len(decrypted) < 146:
+        return None
+    return min((decrypted[145] / 255.0) * 100.0, 100.0)
 
 
 def is_valid_packet(decrypted: bytes) -> bool:

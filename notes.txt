@@ -22,6 +22,10 @@ Powershell (windows default terminal)
     
     sudo shutdown now
 
+    This stops the service immediately and turns off both LED strips. The service will still restart automatically on next reboot though.
+    sudo systemctl stop brakeleds.service
+
+
 Pi OS Configuration
 ===================
 Hostname: brakeled
@@ -30,4 +34,34 @@ User: pi; Password: see password manager;
 
 
 
-Green LED data wire connects to Pi GPIO pin 12
+Brakes: Green LED data wire connects to Pi GPIO pin 12
+Throttle: Green LED data wire connects to Pi GPIO pin 32
+
+
+Here's your deployment workflow:
+Step 1: From your Windows PC, second PowerShell window in your project folder
+Navigate to project folder if not already there:
+
+cd C:\MegaSync\Dev\GT7\BrakeLEDs\ClaudeBrakeLEDs
+Copy all updated files to the Pi in one command:
+
+scp brake_leds.py gt7_telemetry.py throttle_leds.py config.json pi@brakeled.local:~/ClaudeBrakeLEDs/
+Enter your Pi password when prompted.
+
+Step 2: From your SSH session on the Pi
+Restart the service to pick up the new files:
+
+sudo systemctl restart brakeleds.service
+
+Step 3: Verify it started cleanly
+Check service status:
+
+sudo systemctl status brakeleds.service
+Check the log:
+
+cat ~/ClaudeBrakeLEDs/brakeleds.log
+
+Step 4: Test
+Fire up GT7, get into a session, press brake and throttle and confirm both strips respond.
+
+Note: led_controller.py and logger.py are not in the SCP command above because they didn't change. If you ever want to deploy everything regardless of what changed, just add them to the scp command.
