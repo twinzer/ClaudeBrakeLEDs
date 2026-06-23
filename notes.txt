@@ -9,7 +9,7 @@ Powershell (windows default terminal)
 
     Navigate to your project and run the code:
     cd ~/ClaudeBrakeLEDs
-    sudo python3 brake_leds.py
+    sudo python3 pedal_leds.py
     
     restart LED service on Pi:
     sudo systemctl restart brakeleds.service
@@ -28,6 +28,9 @@ Powershell (windows default terminal)
     Service status
     sudo systemctl status brakeleds.service --no-pager
 
+    Find IP address of Pi
+    hostname -I
+
 Pi OS Configuration
 ===================
 Hostname: brakeled
@@ -42,25 +45,24 @@ Throttle: Green LED data wire connects to Pi GPIO pin 32
 
 Here's your deployment workflow:
 Step 1: From your Windows PC, second PowerShell window in your project folder
+
 Navigate to project folder if not already there:
-
 cd C:\MegaSync\Dev\GT7\BrakeLEDs\ClaudeBrakeLEDs
-Copy all updated files to the Pi in one command:
 
-scp brake_leds.py gt7_telemetry.py throttle_leds.py config.json pi@brakeled.local:~/ClaudeBrakeLEDs/
+Copy all updated files to the Pi in one command:
+scp pedal_leds.py brake_led_controller.py throttle_led_controller.py gt7_telemetry.py logger.py config.json brakeleds.service pi@brakeled.local:~/ClaudeBrakeLEDs/
+
 Enter your Pi password when prompted.
 
 Step 2: From your SSH session on the Pi
 Restart the service to pick up the new files:
-
 sudo systemctl restart brakeleds.service
 
 Step 3: Verify it started cleanly
 Check service status:
-
 sudo systemctl status brakeleds.service --no-pager
-Check the log:
 
+Check the log:
 cat ~/ClaudeBrakeLEDs/brakeleds.log
 
 Step 4: Test
