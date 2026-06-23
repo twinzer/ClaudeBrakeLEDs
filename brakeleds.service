@@ -3,7 +3,7 @@ Description=GT7 Brake LEDs
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/python3 /home/pi/ClaudeBrakeLEDs/brake_leds.py
+ExecStart=/usr/bin/python3 /home/pi/ClaudeBrakeLEDs/pedal_leds.py
 WorkingDirectory=/home/pi/ClaudeBrakeLEDs
 StandardOutput=journal
 StandardError=journal

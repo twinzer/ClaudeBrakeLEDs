@@ -1,6 +1,6 @@
 """
-led_controller.py
-Manages LED color zone logic and output — either to real WS2812B
+brake_led_controller.py
+Manages brake LED color zone logic and output — either to real WS2812B
 hardware via NeoPixel on the Pi, or a console simulation on Windows.
 """
 
@@ -57,12 +57,12 @@ def _is_raspberry_pi() -> bool:
 
 def _try_init_hardware(led_count: int, brightness: int):
     """
-    Attempt to initialize the NeoPixel hardware.
-    Only tries on a real Raspberry Pi with LED strip physically connected.
+    Attempt to initialize the NeoPixel hardware for the brake strip.
+    Uses GPIO 18 (physical pin 12) for data.
     Returns a pixels object on success, None otherwise.
     """
     if not _is_raspberry_pi():
-        log.info("Not a Raspberry Pi — running in simulation mode.")
+        log.info("Brake: Not a Raspberry Pi — running in simulation mode.")
         return None
 
     try:
@@ -75,21 +75,22 @@ def _try_init_hardware(led_count: int, brightness: int):
             auto_write=False,
             pixel_order=neopixel.GRB
         )
-        log.info("NeoPixel hardware detected — running in LED mode.")
+        log.info("Brake: NeoPixel hardware detected — running in LED mode.")
         return pixels
     except Exception as e:
-        log.warning(f"LED hardware not available ({e}) — running in simulation mode.")
+        log.warning(f"Brake: LED hardware not available ({e}) — running in simulation mode.")
         return None
 
-# ── LED controller class ──────────────────────────────────────────────────────
+# ── Brake LED controller class ────────────────────────────────────────────────
 
-class LEDController:
+class BrakeLEDController:
     """
-    Abstracts LED output. On the Pi, drives the physical WS2812B strip.
+    Controls the brake LED strip.
+    Four color zones: green (1-25), yellow (26-50), orange (51-75), red (76-100).
+    On the Pi, drives the physical WS2812B strip.
     On Windows, renders a color bar in the terminal.
     """
 
-    # ANSI color codes for terminal simulation
     _ANSI = {
         "green":  "\033[92m",
         "yellow": "\033[93m",
@@ -108,7 +109,7 @@ class LEDController:
         self.simulation  = self._pixels is None
 
     def update(self, brake_pct: float):
-        """Update the LED strip (or simulation) for the given brake percentage."""
+        """Update the brake LED strip for the given brake percentage."""
         states = compute_led_states(brake_pct, self.led_count, self.color_zones)
         if self.simulation:
             self._render_simulation(brake_pct, states)
@@ -116,7 +117,7 @@ class LEDController:
             self._render_hardware(states)
 
     def clear(self):
-        """Turn all LEDs off."""
+        """Turn all brake LEDs off."""
         if not self.simulation:
             self._pixels.fill((0, 0, 0))
             self._pixels.show()
@@ -136,7 +137,7 @@ class LEDController:
         bar += self._ANSI["reset"]
         lit = int(brake_pct)
         pct = f"{self._ANSI['bold']}{brake_pct:5.1f}%{self._ANSI['reset']}"
-        print(f"\r{pct} [{bar}] {lit:3d}/{self.led_count}", end="", flush=True)
+        print(f"\rBrake:    {pct} [{bar}] {lit:3d}/{self.led_count}", end="", flush=True)
 
     def _rgb_to_ansi(self, color: tuple) -> str:
         r, g, b = color

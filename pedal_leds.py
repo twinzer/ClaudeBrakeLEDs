@@ -1,5 +1,5 @@
 """
-brake_leds.py
+pedal_leds.py
 Entry point. Loads config, starts the GT7 telemetry listener,
 and feeds brake and throttle data to their respective LED controllers.
 """
@@ -11,8 +11,8 @@ import logging
 
 from logger import setup_logging
 from gt7_telemetry import start_heartbeat, decrypt_gt7_packet, is_valid_packet, parse_brake, parse_throttle
-from led_controller import LEDController
-from throttle_leds import ThrottleLEDController
+from brake_led_controller import BrakeLEDController
+from throttle_led_controller import ThrottleLEDController
 
 # ── Load config ───────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ def main():
     log.info("ClaudeBrakeLEDs starting up")
     log.info(f"PS5 IP: {PS5_IP}, receive port: {RECEIVE_PORT}, send port: {SEND_PORT}")
 
-    brake_leds    = LEDController(LED_COUNT, BRIGHTNESS, COLORS)
+    brake_leds    = BrakeLEDController(LED_COUNT, BRIGHTNESS, COLORS)
     throttle_leds = ThrottleLEDController(THROTTLE_LED_COUNT, THROTTLE_COLOR, THROTTLE_GPIO_PIN)
 
     start_heartbeat(PS5_IP, SEND_PORT, HEARTBEAT_MS)

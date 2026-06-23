@@ -1,8 +1,8 @@
 """
-throttle_leds.py
+throttle_led_controller.py
 Manages throttle LED strip output — either to real WS2812B
 hardware via NeoPixel on the Pi, or a console simulation on Windows.
-Single white zone across all 100 LEDs at 50% brake brightness.
+Single white zone across all 100 LEDs at reduced brightness.
 """
 
 import logging
@@ -24,7 +24,7 @@ def _is_raspberry_pi() -> bool:
 def _try_init_hardware(led_count: int, gpio_pin: int):
     """
     Attempt to initialize the NeoPixel hardware for the throttle strip.
-    Uses GPIO pin 12 (physical pin 32) for data.
+    Uses GPIO 13 (physical pin 33) for data.
     Returns a pixels object on success, None otherwise.
     """
     if not _is_raspberry_pi():
@@ -35,7 +35,6 @@ def _try_init_hardware(led_count: int, gpio_pin: int):
         import board
         import neopixel
 
-        # Map integer GPIO pin number to board pin object
         pin_map = {
             13: board.D13,
             18: board.D18,
@@ -65,6 +64,8 @@ class ThrottleLEDController:
     Controls the throttle LED strip.
     Single white zone: LEDs 1..floor(throttle_pct) are lit white.
     LEDs above throttle_pct are off.
+    On the Pi, drives the physical WS2812B strip.
+    On Windows, renders a color bar in the terminal.
     """
 
     _ANSI = {
@@ -76,7 +77,7 @@ class ThrottleLEDController:
 
     def __init__(self, led_count: int, color: tuple, gpio_pin: int):
         self.led_count  = led_count
-        self.color      = color        # e.g. (128, 128, 128)
+        self.color      = color
         self._pixels    = _try_init_hardware(led_count, gpio_pin)
         self.simulation = self._pixels is None
 
