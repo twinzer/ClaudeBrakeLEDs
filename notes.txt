@@ -25,6 +25,8 @@ Powershell (windows default terminal)
     This stops the service immediately and turns off both LED strips. The service will still restart automatically on next reboot though.
     sudo systemctl stop brakeleds.service
 
+    Service status
+    sudo systemctl status brakeleds.service --no-pager
 
 Pi OS Configuration
 ===================
@@ -56,7 +58,7 @@ sudo systemctl restart brakeleds.service
 Step 3: Verify it started cleanly
 Check service status:
 
-sudo systemctl status brakeleds.service
+sudo systemctl status brakeleds.service --no-pager
 Check the log:
 
 cat ~/ClaudeBrakeLEDs/brakeleds.log
