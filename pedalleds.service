@@ -1,5 +1,5 @@
 [Unit]
-Description=GT7 Brake LEDs
+Description=GT7 Pedal LEDs
 After=network.target
 
 [Service]

@@ -3,9 +3,10 @@
     "receive_port": 33740,
     "send_port": 33739,
     "heartbeat_ms": 250,
-    "led_count": 100,
-    "brightness": 76,
-    "colors": {
+    "brake_led_count": 100,
+    "brake_gpio_pin": 18,
+    "brake_brightness": 76,
+    "brake_colors": {
         "zone1_green":  [0, 255, 0],
         "zone2_yellow": [255, 255, 0],
         "zone3_orange": [255, 80, 0],

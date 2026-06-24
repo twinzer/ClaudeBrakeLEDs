@@ -8,32 +8,35 @@ Powershell (windows default terminal)
     password is in pword mgr
 
     Navigate to your project and run the code:
-    cd ~/ClaudeBrakeLEDs
+    cd ~/PedalLEDs
     sudo python3 pedal_leds.py
     
     restart LED service on Pi:
-    sudo systemctl restart brakeleds.service
+    sudo systemctl restart pedalleds.service
 
     Check the log 
-    cat ~/ClaudeBrakeLEDs/brakeleds.log
+    cat ~/PedalLEDs/brakeleds.log
 
     Test if Pi is running:
-    ping brakeled.local
+    ping pedalled.local
     
     sudo shutdown now
 
+    Reboot
+    sudo reboot
+
     This stops the service immediately and turns off both LED strips. The service will still restart automatically on next reboot though.
-    sudo systemctl stop brakeleds.service
+    sudo systemctl stop pedalleds.service
 
     Service status
-    sudo systemctl status brakeleds.service --no-pager
+    sudo systemctl status pedalleds.service --no-pager
 
     Find IP address of Pi
     hostname -I
 
 Pi OS Configuration
 ===================
-Hostname: brakeled
+Hostname: pedalled
 Localization: Washington | Phoenix
 User: pi; Password: see password manager;
 
@@ -47,23 +50,23 @@ Here's your deployment workflow:
 Step 1: From your Windows PC, second PowerShell window in your project folder
 
 Navigate to project folder if not already there:
-cd C:\MegaSync\Dev\GT7\BrakeLEDs\ClaudeBrakeLEDs
+cd C:\MegaSync\Dev\GT7\PedalLEDs\ClaudePedalLEDs
 
 Copy all updated files to the Pi in one command:
-scp pedal_leds.py brake_led_controller.py throttle_led_controller.py gt7_telemetry.py logger.py config.json brakeleds.service pi@brakeled.local:~/ClaudeBrakeLEDs/
+scp pedal_leds.py brake_led_controller.py throttle_led_controller.py gt7_telemetry.py logger.py config.json pedalleds.service pi@pedalled.local:~/PedalLEDs/
 
 Enter your Pi password when prompted.
 
 Step 2: From your SSH session on the Pi
 Restart the service to pick up the new files:
-sudo systemctl restart brakeleds.service
+sudo systemctl restart pedalleds.service
 
 Step 3: Verify it started cleanly
 Check service status:
-sudo systemctl status brakeleds.service --no-pager
+sudo systemctl status pedalleds.service --no-pager
 
 Check the log:
-cat ~/ClaudeBrakeLEDs/brakeleds.log
+cat ~/PedalLEDs/pedalleds.log
 
 Step 4: Test
 Fire up GT7, get into a session, press brake and throttle and confirm both strips respond.

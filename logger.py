@@ -1,7 +1,7 @@
 """
 logger.py
-Configures application-wide logging for ClaudeBrakeLEDs.
-Call setup_logging() once at startup in brake_leds.py.
+Configures application-wide logging for ClaudePedalLEDs.
+Call setup_logging() once at startup in pedal_leds.py.
 """
 
 import logging
@@ -12,11 +12,11 @@ import pathlib
 def setup_logging() -> logging.Logger:
     """
     Configure logging to write to a rotating log file and console.
-    Log file: ~/ClaudeBrakeLEDs/brakeleds.log
+    Log file: ~/PedalLEDs/pedalleds.log
     Rotates at 1MB, keeps 3 backups.
-    Returns the root logger for use in brake_leds.py.
+    Returns the root logger for use in pedal_leds.py.
     """
-    log_path = pathlib.Path(__file__).parent / "brakeleds.log"
+    log_path = pathlib.Path(__file__).parent / "pedalleds.log"
 
     logger = logging.getLogger()
     logger.setLevel(logging.INFO)
