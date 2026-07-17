@@ -2,6 +2,9 @@
 brake_led_controller.py
 Manages brake LED color zone logic and output — either to real WS2812B
 hardware via NeoPixel on the Pi, or a console simulation on Windows.
+
+Zone keys in config.json (zone1..zone4) are position-based, not color-based,
+so changing any zone's color is purely a config edit with no code changes.
 """
 
 import logging
@@ -16,10 +19,10 @@ def build_color_zones(colors: dict) -> list:
     LEDs 1-25 → zone1, 26-50 → zone2, 51-75 → zone3, 76-100 → zone4.
     """
     return [
-        (25,  tuple(colors["zone1_green"])),
-        (50,  tuple(colors["zone2_yellow"])),
-        (75,  tuple(colors["zone3_orange"])),
-        (100, tuple(colors["zone4_red"])),
+        (25,  tuple(colors["zone1"])),
+        (50,  tuple(colors["zone2"])),
+        (75,  tuple(colors["zone3"])),
+        (100, tuple(colors["zone4"])),
     ]
 
 
@@ -86,20 +89,15 @@ def _try_init_hardware(led_count: int, brightness: int):
 class BrakeLEDController:
     """
     Controls the brake LED strip.
-    Four color zones: green (1-25), yellow (26-50), orange (51-75), red (76-100).
+    Four color zones, colors fully defined by config.json — this class has
+    no knowledge of what color any zone actually is.
     On the Pi, drives the physical WS2812B strip.
     On Windows, renders a color bar in the terminal.
     """
 
-    _ANSI = {
-        "green":  "\033[92m",
-        "yellow": "\033[93m",
-        "orange": "\033[38;5;208m",
-        "red":    "\033[91m",
-        "off":    "\033[90m",
-        "reset":  "\033[0m",
-        "bold":   "\033[1m",
-    }
+    _ANSI_OFF   = "\033[90m"
+    _ANSI_RESET = "\033[0m"
+    _ANSI_BOLD  = "\033[1m"
 
     def __init__(self, led_count: int, brightness: int, colors: dict):
         self.led_count   = led_count
@@ -131,20 +129,33 @@ class BrakeLEDController:
         bar = ""
         for color in states:
             if color == (0, 0, 0):
-                bar += f"{self._ANSI['off']}░"
+                bar += f"{self._ANSI_OFF}░"
             else:
                 bar += f"{self._rgb_to_ansi(color)}█"
-        bar += self._ANSI["reset"]
+        bar += self._ANSI_RESET
         lit = int(brake_pct)
-        pct = f"{self._ANSI['bold']}{brake_pct:5.1f}%{self._ANSI['reset']}"
+        pct = f"{self._ANSI_BOLD}{brake_pct:5.1f}%{self._ANSI_RESET}"
         print(f"\rBrake:    {pct} [{bar}] {lit:3d}/{self.led_count}", end="", flush=True)
 
     def _rgb_to_ansi(self, color: tuple) -> str:
+        """
+        Approximate any arbitrary RGB color as the nearest terminal ANSI color.
+        Not tied to any specific zone's color choice — works for whatever
+        colors happen to be configured.
+        """
         r, g, b = color
-        if r == 0 and g > 0:
-            return self._ANSI["green"]
-        elif r > 0 and g > 0 and b == 0:
-            return self._ANSI["yellow"] if g > 80 else self._ANSI["orange"]
-        elif r > 0 and g == 0:
-            return self._ANSI["red"]
-        return self._ANSI["off"]
+        # Standard 8-color ANSI palette approximation via nearest-neighbor
+        palette = {
+            "\033[91m": (255, 0, 0),      # red
+            "\033[92m": (0, 255, 0),      # green
+            "\033[93m": (255, 255, 0),    # yellow
+            "\033[94m": (0, 0, 255),      # blue
+            "\033[95m": (255, 0, 255),    # magenta
+            "\033[96m": (0, 255, 255),    # cyan
+            "\033[38;5;208m": (255, 128, 0),  # orange
+        }
+        best_code = min(
+            palette,
+            key=lambda code: sum((a - b) ** 2 for a, b in zip(palette[code], color))
+        )
+        return best_code

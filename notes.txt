@@ -4,7 +4,7 @@ https://git-scm.com/cheat-sheet
 
 Powershell (windows default terminal)
     SSH into Pi:
-    ssh pi@brakeled.local
+    ssh pi@pedalled.local
     password is in pword mgr
 
     Navigate to your project and run the code:
@@ -15,7 +15,7 @@ Powershell (windows default terminal)
     sudo systemctl restart pedalleds.service
 
     Check the log 
-    cat ~/PedalLEDs/brakeleds.log
+    cat ~/PedalLEDs/pedalleds.log
 
     Test if Pi is running:
     ping pedalled.local

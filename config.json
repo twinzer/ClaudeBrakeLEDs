@@ -6,11 +6,12 @@
     "brake_led_count": 100,
     "brake_gpio_pin": 18,
     "brake_brightness": 76,
+    "_comment_brake_colors": "zone1 = blue (lightest braking, 0-25%), zone2 = green (26-50%), zone3 = orange (51-75%), zone4 = red (hardest braking, 76-100%). Keys are position-based, not color-based, so any color change here needs no code changes.",
     "brake_colors": {
-        "zone1_green":  [0, 255, 0],
-        "zone2_yellow": [255, 255, 0],
-        "zone3_orange": [255, 80, 0],
-        "zone4_red":    [255, 0, 0]
+        "zone1": [0, 82, 142],
+        "zone2": [0, 110, 0],
+        "zone3": [255, 80, 0],
+        "zone4": [255, 0, 0]
     },
     "throttle_led_count": 100,
     "_comment_throttle_color": "Throttle uses a single white zone across all 100 LEDs. Brightness is set at 50% of brake brightness (76) by halving the RGB values: 128,128,128 instead of 255,255,255. No separate brightness setting needed.",
