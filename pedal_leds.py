@@ -1,3 +1,5 @@
+__version__ = "1.1.0"
+
 """
 pedal_leds.py
 Entry point. Loads config, starts the GT7 telemetry listener,
@@ -17,8 +19,6 @@ from logger import setup_logging
 from gt7_telemetry import start_heartbeat, decrypt_gt7_packet, is_valid_packet, parse_brake, parse_throttle
 from brake_led_controller import BrakeLEDController
 from throttle_led_controller import ThrottleLEDController
-
-__version__ = "1.0.0"
 
 # ── Load config ───────────────────────────────────────────────────────────────
 
