@@ -1,4 +1,4 @@
-__version__ = "1.1.0"
+__version__ = "1.2.0"
 
 """
 pedal_leds.py
@@ -8,6 +8,10 @@ and feeds brake and throttle data to their respective LED controllers.
 Clears both strips once if telemetry goes silent for 5+ seconds
 (e.g. after leaving a race or time trial), so LEDs don't stay lit
 indefinitely between sessions.
+
+Throttle strip can be fully disabled via config.json's "throttle_enabled"
+key — when false, the ThrottleLEDController is never instantiated, so no
+GPIO/PWM channel is opened in software at all.
 """
 
 import socket
@@ -34,6 +38,7 @@ LED_COUNT           = cfg["brake_led_count"]
 BRIGHTNESS          = cfg["brake_brightness"]
 COLORS              = cfg["brake_colors"]
 THROTTLE_LED_COUNT  = cfg["throttle_led_count"]
+THROTTLE_ENABLED    = cfg["throttle_enabled"]
 THROTTLE_COLOR      = tuple(cfg["throttle_color"])
 THROTTLE_GPIO_PIN   = cfg["throttle_gpio_pin"]
 
@@ -45,7 +50,13 @@ def main():
     log.info(f"PS5 IP: {PS5_IP}, receive port: {RECEIVE_PORT}, send port: {SEND_PORT}")
 
     brake_leds    = BrakeLEDController(LED_COUNT, BRIGHTNESS, COLORS)
-    throttle_leds = ThrottleLEDController(THROTTLE_LED_COUNT, THROTTLE_COLOR, THROTTLE_GPIO_PIN)
+
+    if THROTTLE_ENABLED:
+        throttle_leds = ThrottleLEDController(THROTTLE_LED_COUNT, THROTTLE_COLOR, THROTTLE_GPIO_PIN)
+        log.info("Throttle strip enabled")
+    else:
+        throttle_leds = None
+        log.info("Throttle strip disabled in config — skipping GPIO init")
 
     start_heartbeat(PS5_IP, SEND_PORT, HEARTBEAT_MS)
     log.info("Heartbeat started")
@@ -67,28 +78,31 @@ def main():
                 if decrypted is None or not is_valid_packet(decrypted):
                     continue
 
-                brake_pct    = parse_brake(decrypted)
-                throttle_pct = parse_throttle(decrypted)
+                brake_pct = parse_brake(decrypted)
 
                 if brake_pct is not None:
                     brake_leds.update(brake_pct)
 
-                if throttle_pct is not None:
-                    throttle_leds.update(throttle_pct)
+                if throttle_leds is not None:
+                    throttle_pct = parse_throttle(decrypted)
+                    if throttle_pct is not None:
+                        throttle_leds.update(throttle_pct)
 
                 idle_cleared = False
 
             except socket.timeout:
                 if not idle_cleared:
                     brake_leds.clear()
-                    throttle_leds.clear()
+                    if throttle_leds is not None:
+                        throttle_leds.clear()
                     idle_cleared = True
                     log.info("No telemetry for 5s — cleared LED strips (idle).")
 
     except KeyboardInterrupt:
         log.info("Stopped by user.")
         brake_leds.clear()
-        throttle_leds.clear()
+        if throttle_leds is not None:
+            throttle_leds.clear()
     except Exception as e:
         log.error(f"Fatal error: {e}", exc_info=True)
     finally:

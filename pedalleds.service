@@ -10,6 +10,7 @@ StandardError=journal
 Restart=always
 RestartSec=5
 User=root
+LimitCORE=infinity
 
 [Install]
 WantedBy=multi-user.target

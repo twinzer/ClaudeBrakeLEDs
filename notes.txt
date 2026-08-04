@@ -3,9 +3,17 @@ https://git-scm.com/cheat-sheet
 
 
 Powershell (windows default terminal)
+
+    How to upgrade all libraries. Do monthly:
+        sudo apt update && sudo apt upgrade -y
+        sudo reboot
+    
     SSH into Pi:
     ssh pi@pedalled.local
     password is in pword mgr
+
+    SSH into Beelink
+    ssh tim@beelink
 
     Navigate to your project and run the code:
     cd ~/PedalLEDs
@@ -47,7 +55,10 @@ Throttle: Green LED data wire connects to Pi GPIO pin 32
 
 
 Here's your deployment workflow:
-Step 1: From your Windows PC, second PowerShell window in your project folder
+Step 1a: stop the service:
+    sudo systemctl stop pedalleds.service
+
+Step 1b: From your Windows PC, second PowerShell window in your project folder
 
 Navigate to project folder if not already there:
 cd C:\MegaSync\Dev\GT7\PedalLEDs\ClaudePedalLEDs
@@ -72,3 +83,27 @@ Step 4: Test
 Fire up GT7, get into a session, press brake and throttle and confirm both strips respond.
 
 Note: led_controller.py and logger.py are not in the SCP command above because they didn't change. If you ever want to deploy everything regardless of what changed, just add them to the scp command.
+
+
+
+
+The Drop-Capture Procedure (Save This in Your Notes)
+When you experience a brake LED drop, as soon as convenient, SSH into the Pi and run these, pasting all output to me:
+1. Confirm it was a crash and see the restart history:
+sudo journalctl -u pedalleds.service --since "15 minutes ago" --no-pager | grep -E "SEGV|Started|signal|exited"
+2. List captured crash dumps:
+sudo coredumpctl list
+3. Get the detailed info on the most recent crash:
+sudo coredumpctl info
+4. Get the actual backtrace — the single most valuable piece:
+sudo coredumpctl gdb
+Then at the (gdb) prompt that appears, type:
+bt
+and after it prints, type:
+quit
+Paste everything from the bt output.
+If gdb Isn't Installed
+Step 4 may say gdb isn't found. If so, install it once now so it's ready:
+sudo apt install gdb -y
+What This Gets Us
+Steps 1-3 confirm that it crashed and the surrounding context; step 4's backtrace shows the exact function in the exact library where the segfault occurs. With that backtrace, we stop theorizing (audio, throttle strip, DMA) and see the actual failing call — which is what finally lets us fix it with confidence rather than another plausible-but-wrong hypothesis.
