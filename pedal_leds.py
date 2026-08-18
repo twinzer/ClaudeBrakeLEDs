@@ -1,11 +1,16 @@
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 """
 pedal_leds.py
 Entry point. Loads config, starts the GT7 telemetry listener,
 and feeds brake and throttle data to their respective LED controllers.
 
-Clears both strips once if telemetry goes silent for 5+ seconds
+Clears both strips once at startup, so a crash-and-restart (or any
+restart) never leaves the strips frozen on a stale value — the first
+thing a fresh process does is turn the LEDs off until real telemetry
+arrives.
+
+Also clears both strips once if telemetry goes silent for 5+ seconds
 (e.g. after leaving a race or time trial), so LEDs don't stay lit
 indefinitely between sessions.
 
@@ -58,6 +63,14 @@ def main():
         throttle_leds = None
         log.info("Throttle strip disabled in config — skipping GPIO init")
 
+    # Clear both strips on startup so a crash-and-restart never leaves the
+    # LEDs frozen on a stale value. The strip stays dark until real
+    # telemetry arrives and lights it up.
+    brake_leds.clear()
+    if throttle_leds is not None:
+        throttle_leds.clear()
+    log.info("Cleared LED strips on startup")
+
     start_heartbeat(PS5_IP, SEND_PORT, HEARTBEAT_MS)
     log.info("Heartbeat started")
 
@@ -67,7 +80,7 @@ def main():
 
     log.info(f"Listening for GT7 telemetry on port {RECEIVE_PORT}")
 
-    idle_cleared = False
+    idle_cleared = True  # strips already cleared above; don't re-clear until telemetry seen
 
     try:
         while True:
